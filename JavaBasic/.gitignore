@@ -2,7 +2,7 @@
 *.class
 *.uml
 .classpath
-.myeclips
+.myeclipse
 .project
 .reverse.properties
 .settings
