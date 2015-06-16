@@ -1,0 +1,20 @@
+-- -------------------------------------------------------------------
+-- 
+-- Copyright: (C) Hozdo Logistics Group Co. Ltd.
+-- Date: 2012-04-11
+-- Author: Frank Deng <guanxiong.deng@hozdo.com>
+-- Version: 1.0
+-- Description:
+--          Oracle common query script.
+--
+-- Hisotry:
+-- <Modifier>            <DateTime>                 <Comments>
+-- Frank Deng            2012-04-11 09:00            Created
+-- -------------------------------------------------------------------
+sleep与wait方法的区别
+1.sleep
+	sleep是Thread类的方法，主要应用与线程的控制，sleep不会释放锁
+2.wait
+	wait是Object类的方法，主要用于线程间的通信，与wait相配套的有notify与notifyAll方法。
+wait会让出同步锁，让其他线程进行竞争。
+	

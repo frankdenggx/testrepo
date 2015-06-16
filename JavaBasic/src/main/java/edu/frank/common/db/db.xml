@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - 版权 : <HOTEL1802 STUDIO>
+  - JDK版本：<1.6.0>
+  - 项目：<JavaBasic>  
+  - 包 : <edu.frank.common.db>
+  - 文件名 : <db.xml>
+  - 文件版本 : 1.0
+  - 描述：数据库连接XML配置文件
+  
+  - 作者：<Frank Deng Email:<a href="mailto:yoyudneghihi@gmail.com">Frank Deng</a>>
+  - 时间: <2011-09-26 00:50>
+  -
+  - 历史：
+  - <修改人>			<修改日期>					<修改内容>	 
+  -->
+<DATABASES>
+	<!-- 数据库信息 -->
+	<DATABASE name="JavaBasic" type="MYSQL" driver="com.mysql.jdbc.Driver" charset="GB2312" collection="CHINESE_GB2312_CI">
+		<!-- 连接池名称 -->
+		<POOLNAME>JavaBasicPool</POOLNAME>
+		<!-- 连接URI -->
+		<URL>jdbc:mysql://localhost:3306/javabasic?useUnicode=true&amp;characterEncoding=gbk</URL>
+		<!-- 用户名 -->
+		<USER>root</USER>
+		<!-- 密码 -->
+		<PASSWORD>yoydueng_135137</PASSWORD>
+		<!-- 最大连接数 -->
+		<MAXCONN>30</MAXCONN>
+	</DATABASE>
+</DATABASES>
+

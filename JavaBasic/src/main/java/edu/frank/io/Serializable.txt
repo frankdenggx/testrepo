@@ -1,0 +1,22 @@
+--------------------------------------------------------------------
+--------------------------------------------------------------------
+Serializable 串行化
+----------------------
+1.简介
+2.用法
+3.常用方法
+4.注意事项
+-------------------------
+1.简介
+	串行化对象，针对信息的升级变换，可以进行重构
+2.用法
+	继承java.io.Serializable接口
+3.常用方法
+	使用ObjectOutputStream输入串行化对象
+	ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("text.dat"));
+	oos.writeObject(obj);
+	使用ObjectInputStream输出串行化对象
+	ObjectInputStream ois = new ObjectInputStream(new FileInputStream("text.dat");
+	ois.readObject();
+4.注意事项
+	串行化的类最好不要作为子类内部类

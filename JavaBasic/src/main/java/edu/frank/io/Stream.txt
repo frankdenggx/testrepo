@@ -1,0 +1,113 @@
+--------------------------------------------------------------------
+--------------------------------------------------------------------
+Stream 输入和输出流操作
+----------------------
+1.简介
+2.用法
+3.常用方法
+4.注意事项
+-------------------------
+1.简介
+	Java语言将文件看做字节或字符序列的集合。组成文件的字节序列或字符序列也分别称为字节流或字符流。
+Java语言将文件与标准输入或输出统一起来进行处理。
+	输入流将数据从文件、标准输入或者其他外部设备输入加载到内存当中。输出流的作用则正好相反，将内存
+中的数据保存到文件中，或传输给输出设备。
+	输入流在Java语言中对应抽象类InputStream及其子类，输出流对应抽象类OutputStream及其子类。
+	
+2.用法
+	InputStream:
+	以标准输入作为实例System.in，标准输入读取数据是当遇到回车符才将一整行字符作为输入流
+	
+	OutputStream:
+	以标准输出作为实例System.out，输出流使用缓存机制，可以调用flush方法强制输出
+	
+	FileInputStream:
+	从文件中读取数据
+	
+	FileOutputStream:
+	输出文件中的内容
+	
+	PrintStream:
+	System.out其实就是一个指向PrintStream的实例
+	特性：
+	A.可以输出各种各样的数据
+	B.PrintStream的方法一般不会抛出异常
+	C.具有自动强制输出功能
+	同样，它也需要将其他OutputStream子类实例引用作为构造参数
+	
+	输入输出流的重定向:
+	类System的三个静态成员域:
+								标准输入输出流
+	--------------------------------------------------------------------------
+		修饰		|		类型			|		域名			|		说明
+	--------------------------------------------------------------------------
+		static	|	InputStream		|		in			|	标准输入流
+	--------------------------------------------------------------------------
+		static 	|	PrintStream		|		out			|	标准输出流
+	--------------------------------------------------------------------------
+		static	|	PrintStream		|		err			|	标准错误输出流
+	--------------------------------------------------------------------------
+	重定向方法:
+	public static void setIn(InputStream in)
+	public static void setOut(PrintStream out)
+	public static void setErr(PrintStream err)
+	
+	另外可由命令实现:
+	java Java文件名 [0] <标准输入流对应的文件名 
+	java Java文件名 [1]>标准输出流对应文件名 
+	java Java文件名 [2]>标准错误输出流对应文件名
+	
+	DataInputStream:
+	主要用于对基本类型数据的读取，一般来说只读取DataOutputStream输出的数据,需要实现其他输入流子类实例
+	
+	DataOutputStream:
+	主要用于对基本类型数据的存储,需要实现其他输出流子类实例
+	
+	BufferedInputStream:
+	带缓存的输入流,创建实例时，计算机内存空间开辟一个字节数据存储单元，操作完毕一次性读取
+	
+	BufferedOutputStream:
+	带缓存的输出流,创建实例时，计算机内存空间开辟一个字节数据存储单元，操作完毕一次性写入
+	
+	
+	
+3.常用方法
+	InputStream:
+	public abstract int read() throws IOException
+	public int available() throws IOException	//返回输入流中有效的字节数
+	public int read(byte[] b) throws IOException
+	
+	OutputStream:
+	public void write(byte[] b) throws IOException
+	public void flush() throws IOException
+	
+	FileInputStream:
+	public FileInputStream(String name) throws FileNotFoundException
+	
+	FileOutputStream:
+	public FileOutputStream(String name) throws FileNotFoundException
+	public FileOutputStream(String name,boolean append) throws FileNotFoundException
+	
+	PrintStream:
+	实现System.out类似的功能,当然兼有OutputStream的功能
+	
+	DataInputStream:
+	public final byte readByte() throws IOException
+	通过异常EOFException判断是否到达文件末尾
+	
+	DataOutputStream:
+	public final void writeByte(int v) throws IOException
+	public void flush() throws IOException
+	
+	BufferedInputStream:
+	public BufferedInputStream(InputStream in)
+	public BufferedInputStream(InputStream in,int size)	//指定缓存大小
+	
+	BufferedOutputStream:
+	public BufferedOutputStream(OutputStream out)
+	public BufferedOutputStream(OutputStream out,int size)	//指定缓存大小
+	
+4.注意事项
+	InputStream以及OutputStream均为抽象类，只能通过实现其实例进行操作。Uinx或者Linux，流结束的标志
+是Control+D，而Windows系列操作系统流结束标志是Control+Z。
+	

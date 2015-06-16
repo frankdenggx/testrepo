@@ -1,0 +1,36 @@
+          XML概述
+  可扩展标记语言（eXtensible Markup Language，简称XML），是由万维网协会（W3C）推出的新一代数据交换的标准。可以用于定义Web网页上的文档元素和商业文档，同时还可以用于复杂结构数据的表示和传输。
+
+         XML与HTML的区别
+  HTML是描述文本结构和样式的，主要是文本的显示和控制；而XML是一个协议语言，使用来描述数据和数据结构的语言，是一种描述结构的标准，同时必须依赖高级语言才能实现其作用。
+两者写法上的区别：
+   1.XML文档中区分大小写，而HTML不区分大小写
+   2.在HTML文档中若存在列表键时，可以省略结尾标记，而在XML文档中，所有标记都不能省略
+   3.在XML文档中，属性值必须写在引号中，而在HTML文档中并没有严格规定
+
+         XML的解析方法
+  XML文档最基本的解析器有两种，分别是文档对象模型（Document Object Model 简称DOM）和XML解析的简单API（SAX），两者本质上都是一种Java的接口。
+  1.DOM处理
+        文档对象模型（Document Object Model 简称DOM），是一种基于对象的API，使用DOM对XML文档解析时，会在内存中生成与XML文档内容对应的对象模型。当解析完成时，内存中会生成与XML文档结构对应的DOM对象树。这样便能够根据树的结构，以节点形式对文档进行操作。
+        Java的JDK中包含了DOM分析器，在javax.xml.parsers包中，提供了DocumentBuilder类和DocumentBuilderFactory类。若要解析XML文档，可以采用如下步骤：
+        a.需要一个DocumentBuilder类的对象（该对象可以使用DocumentBuilderFactory类的静态方法newInstance()类获取）。
+        b.使用该对象中的parse()方法来解析XML文档。改过程就如同文件流的高级用法，首先需要建立File对象，用来将XML文档加载到内存中，之后使用DocumentBuilder对象中的parse()方法来解析这个XML文档。
+        c.parse()方法将返回一个Document对象（Document类在org.w3c.dom包中），该对象正是XML文档对应的树状结构，并保存在内存中
+
+ （注意：详细的情形可以参考代码文件:JGetXML.java）
+  
+   2.SAX处理
+         使用SAX同样可以完成对XML文档的解析，其对XML文档解析时，会生成相应的事件。与DOM不同的是，当时用DOM解析XML文档的时候，DOM程序会将整个XML文档都读入到一个树状结构中，并存储于内存中。若遇到XML文档较大，并且只需解析XML文档中的一部分数据的时候，使用DOM解析器解析的速度就会明显下降，效率很低。在这种情况下，可以选择使用SAX解析器。使用SAX解析器对XML文档进行解析的时候，程序会从XML文档开始位置进行解析，同时根据已经定义好的事件处理器，来决定当前所解析的部分（元素、属性或时元素内容）是否有必要记录并存储。
+          使用SAX解析器之前，首先要获得SAX解析器。在javax.xml.parsers包中，分别提供了SAXParser类和SAXParserFactory类，可以通过创建SAXParserFactory类的对象factory，并使用该对象的newSAXParser()方法来获取SAX解析器(saxParser)，如下所示
+        SAXParserFactory   factory = SAXParserFactory.newInstane();
+        SAXParser     saxParser = factory.newSAXParser();
+           在获取了SAX解析器saxParser对象之后，就可以使用该对象的parse()方法来对XML文档进行解析，语法格式如下
+        saxParser.parse(source , handler);
+            其中，搜如厕参数可以是File类对象所指定的文件名以及所在的目录，也可以是URL字符串，同样也可以为一个输入流；handler参数则是DefaultHandler类的对象，其中的方法可以用于定义事件处理器。例如
+            public void startElement(String namespace,String lname,String qname,Attributes att);
+           该方法就是DefaultHandler类的对象handler中，用于处理XML文档的一种方法，它包含4个参数，namespace参数用于描述元素的名字空间；lname参数用于描述元素本地名；qname参数用于描述元素名；att参数则是用来描述属性的。
+           使用SAX解析器解析XML的步骤：
+           a.事先规定事件处理的方法（包括遇到什么样的元素该怎样处理等）。
+           b.SAX解析器开始解析XML文档，当遇到每一个元素，便会去查看之前定义的事件处理中（也就是DefaultHandler类的对象handler中），该元素是否符合被处理的条件，若符合则执行该方法，对元素进行相应处理；否则就跳过该元素，继续分析下面的每一个元素。
+      
+    （注意：详细的情形可以参考代码文件:JGetXML.java）

@@ -1,0 +1,120 @@
+--------------------------------------------------------------------
+--------------------------------------------------------------------
+RandomAccessFile
+-----------------
+1.简介
+2.用法
+3.常用方法
+4.注意事项
+-------------------------
+1.简介
+	RandomAccessFile是随机读写文件类。它可以使用同一个类对象对文件同时进行读和写操作。
+读写操作根据文件指针位置进行，指针位置可以设置。
+	它与其他输入输出流类最大的不同是，可以使用同一对象对文件进行读写操作（不分输入流和
+输出流），另外，它非顺序读写，可以指定读写的位置。
+
+2.用法
+	使用构造函数
+	RandomAccessFile(File file,String strMode) throws IOException
+	或者
+	RandomAccessFile(String strFileName,String strMode) throws IOException
+	构造读写对象
+
+3.常用方法
+	读操作：
+	/**
+	 * 读取文件内容
+	 * @param file 文件对象
+	 * @return 文件内容
+	 * @throws Exception IllegalArgumentException 参数出错<br/>
+	 * 					 IOException 文件操作出错
+	 */
+	public String readFile(File file) throws Exception {
+		long lFilePointer = -1;
+		long lFileLength = 0;
+		String strRead = null;
+		String strTemp = null;
+		byte[] byteRead = null;
+		if (null == file || !file.exists() || !file.isFile()){
+			throw new IllegalArgumentException("The file is wrong!");
+		}
+		if (!file.canRead()){
+			throw new IllegalArgumentException("The file can't read!");
+		}
+		try{
+			rafFile = new RandomAccessFile(file,"r");
+			if (null != rafFile){
+				lFileLength = rafFile.length();
+				byteRead = new byte[2048];
+				strRead = "";
+				do{
+					rafFile.read(byteRead, 0, 2048);
+					strTemp = new String(byteRead);
+					strRead = strRead + strTemp;
+					lFilePointer = rafFile.getFilePointer();
+				}while(lFilePointer < lFileLength);
+				
+			}
+		}catch(IOException ex){
+			throw new IOException(ex);
+		}finally{
+			if (null != rafFile){
+				try{
+					rafFile.close();
+				}catch(IOException ex){
+					throw new IOException("Can't close file!");
+				}
+				rafFile = null;
+			}
+		}
+		
+		return strRead;
+		
+	}
+	写操作：
+	/**
+	 * 写文件
+	 * @param file 文件对象
+	 * @param strWrite 写入内容
+	 * @throws Exception IllegalArgumentException 参数出错<br/>
+	 * 					 IOException 文件操作出错
+	 */
+	public void writeFile(File file,String strWrite) throws Exception {
+		byte[] byteWrite = null;
+		if (null == file || !file.exists() || !file.isFile()){
+			throw new IllegalArgumentException("The file is wrong!");
+		}
+		if (!file.canWrite()){
+			throw new IllegalArgumentException("The file can't be written!");
+		}
+		if (null == strWrite || strWrite.length() <= 0){
+			throw new IllegalArgumentException("Nothing can't be written!");
+		}
+		
+		try{
+			rafFile = new RandomAccessFile(file,"rw");
+			byteWrite = strWrite.getBytes();
+			rafFile.seek(rafFile.length());
+			rafFile.writeChars("\n");
+			rafFile.seek(rafFile.length());
+			rafFile.write(byteWrite);
+		}catch(IOException ex){
+			throw new IOException(ex);
+		}finally{
+			if (null != rafFile){
+				try{
+					rafFile.close();
+				}catch(IOException ex){
+					throw new IOException("Can't close file!");
+				}
+				rafFile = null;
+			}
+		}
+	}
+	
+4.注意事项
+	A.RandomAccessFile类继承了DataInput和DataOutput接口
+	B.RandomAccessFile读写文件的操作，相当于操作大型Byte数组，文件指针相当于数组的下标
+	C.如果此类中的所有读取例程在读取所需数量的字节之前已到达文件末尾，则抛出 EOFException
+	D.如果由于某些原因无法读取任何字节，而不是在读取所需数量的字节之前已到达文件末尾，
+	      则抛出 IOException

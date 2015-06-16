@@ -1,0 +1,38 @@
+Java组播功能
+------------------------------------------
+简述
+------  
+  Java组播是基于UDP协议的网络传输，它同时也可以成为一个组，加入到其他多播主机的“组”
+  当中。多播组通过D类IP地址和标准UDP端口号指定。
+  D类IP地址：
+  224.0.0.0 ~ 239.255.255.255 （包括两者）
+  地址224.0.0.0被保留
+  Java组播主要使用MulticastSocket数据报套接字，它是一种（UDP）DatagramSocket
+     套接字不用成为多播组主机也可以向多播组发送信息，但该信息只能被多播组内的成员主机
+接收
+      多个MulticastSocket可以同时预定多播组和端口，并且都会收到组数据报
+  Applet及其子类不能使用多播套接字
+
+使用方式
+-------
+  1.通过所需端口创建MulticastSocket
+  	MulticastSocket dataSocket = new MulticastSocket(8799);
+  2.初始化主机网络地址
+  	InetAddress groupAddr = InetAddress.getByName("228.5.6.7");
+  3.将主机加入多播组
+  	dataSocekt.joinGroup(groupAddr);
+  4.设置数据报
+  	String strMsg = "Hello World";
+  	DatagramSocket sendPacket= 
+  		new DatagramSocket(strMsg.getBytes(),strMsg.length(),groupAddr,8799);
+  5.发送数据
+  	dataSocket.send(sendPacket);
+  6.接收数据
+  	byte[] recvBuffer = new byte[1024];
+  	DatagramSocket recvPacket = 
+  		new DatagramSocket(recvBuffer,0,recvBuffer.length);
+  	dataSocket.receive(recvPacket);
+  	//其他处理
+  	...
+  7.离开多播组
+  	dataSocket.leaveGroup(groupAddr);

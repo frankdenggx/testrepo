@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<people>
+  <address>
+    <street>BUPT,10# XiTuCheng road</street>
+    <city>Bei Jing</city>
+    <district>Hai Dian</district>
+  </address>
+  <person>
+    <name familyname="Wang">Wang Xiao Yue</name>
+    <sex>male</sex>
+    <age>24</age>
+  </person>
+  <person>
+    <name familyname="Xu">Xu Guang Yang</name>
+    <sex>male</sex>
+    <age>22</age>
+  </person>
+</people>

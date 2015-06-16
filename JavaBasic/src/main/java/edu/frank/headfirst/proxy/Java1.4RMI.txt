@@ -1,0 +1,214 @@
+RMI远程调用(一)基于JDK1.4  
+
+2009-03-10 16:46:17|  分类： java |举报|字号 订阅
+    远程调用即是从客户机上调用远程服务端的方法，以获取该方法的运行结果，通常远程调用的是应用于分布式应用，客户端只需要一个远程接口，和两个自动生成的根和干的类即可以运行远程的方法，达到隐藏远程的具体实现细节。
+    Java RMI （Remote Method Invocation 远程方法调用）是用Java在JDK1.1中实现的，它大大增强了Java开发分布式应用的能力。Java作为一种风靡一时的网络开发语言，其巨大的威力就体现在它强大的开发分布式网络应用的能力上，而RMI就是开发百分之百纯Java的网络分布式应用系统的核心解决方案之一。
+    如，有些功能可能只能在服务器端实现，而无法通过远程操控获取，则服务器端就可以将这些功能封装成可被远程调用的对象，然后提供给客户端调用
+ 
+    一、RMI系统运行机理 
+    RMI应用程序通常包括两个独立的程序：服务器程序和客户机程序。典型的服务器应用程序将创建多个远程对象，使这些远程对象能够被引用，然后等待客户机调用这些远程对象的方法。而典型的客户机程序则从服务器中得到一个或多个远程对象的引用，然后调用远程对象的方法。RMI为服务器和客户机进行通信和信息传递提供了一种机制。
+    在与远程对象的通信过程中，RMI使用标准机制：stub和skeleton（根和干）。远程对象的stub担当远程对象的客户本地代表或代理人角色。调用程序将调用本地stub的方法，而本地stub将负责执行对远程对象的方法调用。在RMI中，远程对象的stub与该远程对象所实现的远程接口集相同。调用stub的方法时将执行下列操作：(1) 初始化与包含远程对象的远程虚拟机的连接；(2) 对远程虚拟机的参数进行编组（写入并传输）；(3) 等待方法调用结果；(4) 解编（读取）返回值或返回的异常；(5) 将值返回给调用程序。为了向调用程序展示比较简单的调用机制，stub将参数的序列化和网络级通信等细节隐藏了起来。在远程虚拟机中，每个远程对象都可以有相应的skeleton（在JDK1.2环境中无需使用skeleton）。Skeleton负责将调用分配给实际的远程对象实现。它在接收方法调用时执行下列操作：(1) 解编（读取）远程方法的参数；(2) 调用实际远程对象实现上的方法；(3) 将结果（返回值或异常）编组（写入并传输）给调用程序。stub和skeleton由rmic编译器生成。 
+
+利用RMI编写分布式对象应用程序需要完成以下工作：(1) 定位远程对象。应用程序可使用两种机制中的一种得到对远程对象的引用。它既可用RMI的简单命名工具rmiregistry来注册它的远程对象，也可以将远程对象引用作为常规操作的一部分来进行传递和返回。（2）与远程对象通信。远程对象间通信的细节由RMI处理，对于程序员来说，远程通信看起来就像标准的Java方法调用。（3）给作为参数或返回值传递的对象加载类字节码。因为RMI允许调用程序将纯Java对象传给远程对象，所以，RMI将提供必要的机制，既可以加载对象的代码又可以传输对象的数据。在RMI分布式应用程序运行时，服务器调用注册服务程序以使名字与远程对象相关联。客户机在服务器上的注册服务程序中用远程对象的名字查找该远程对象，然后调用它的方法。 
+
+二、对象序列化 
+
+       在RMI分布式应用系统中，服务器与客户机之间传递的Java对象必须是可序列化的对象。不可序列化的对象不能在对象流中进行传递。对象序列化扩展了核心Java输入/输出类，同时也支持对象。对象序列化支持把对象编码以及将通过它们可访问到的对象编码变成字节流；同时，它也支持流中对象图形的互补重构造。序列化用于轻型持久性和借助于套接字或远程方法调用(RMI)进行的通信。序列化中现在包括一个 API（Application Programming Interface，应用程序接口），允许独立于类的域指定对象的序列化数据，并允许使用现有协议将序列化数据域写入流中或从流中读取，以确保与缺省读写机制的兼容性。 
+
+       为编写应用程序，除多数瞬态应用程序外，都必须具备存储和检索 Java对象的能力。以序列化方式存储和检索对象的关键在于提供重新构造该对象所需的足够对象状态。存储到流的对象可能会支持 Serializable（可序列化）或 Externalizable（可外部化）接口。对于Java对象，序列化形式必须能标识和校验存储其内容的对象所属的 Java类，并且将该内容还原为新的实例。对于可序列化对象，流将提供足够的信息将流的域还原为类的兼容版本。对于可外部化对象，类将全权负责其内容的外部格式。序列化 Java 对象的目的是：提供一种简单但可扩充的机制，以序列化方式维护 Java对象的类型及安全属性；具有支持编组和解编的扩展能力以满足远程对象的需要；具有可扩展性以支持 Java 对象的简单持久性；只有在自定义时，才需对每个类提供序列化自实现；允许对象定义其外部格式。
+三、分布式应用的实现和运行步骤 
+
+编写Java RMI分布式应用程序的步骤主要包括以下几步： 
+
+(1)必备条件：1）创建一个远程接口，该接口继承了java.rmi.Remote接口，接口必须是public的，接口的所有方法也必须是public的且每个方法都必须抛出java.rmi.RemoteException；2）创建一个远程接口的实现类，该类除了实现远程接口还继承了java.rmi.server.UnicastRemote
+Object类， 而且该实现类必须有一个构造方法；3）客户端调用时将远程对象转换成远程接口，而不是远程接口的实现类。
+
+(2) 编写和实现服务器类。该类是实现(1)中定义的远程接口。所以在该类中至少要声明实现一个远程接口，并且必须具有构造方法。在该类中还要实现远程接口中所声明的各个远程方法。 
+
+(3) 编写使用远程服务的客户机程序。在该类中使用java.rmi.Naming中的lookup()方法获得对远程对象的引用，依据需要调用该引用的远程方法，其调用方式和对本地对象方法的调用相同。 
+
+实现了服务器和客户机的程序后，就是编译和运行该RMI系统。其步骤有： 
+(1) 使用javac编译远程接口类，远程接口实现类和客户机程序。 
+(2) 使用rmic编译器生成实现类的stub和skeleton。 
+(3) 启动RMI注册服务程序rmiregistry。 
+(4) 启动服务器端程序。 
+(5) 启动客户机程序。
+实例：写一个获取当前时间的类方法，并远程调用该类对象的方法。
+ 
+I）创建远程接口
+       接口与它的所有方法必须是public的，所有的方法必须抛出RemoteException。
+package net.rmi.server;
+ 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+ 
+/**
+ *
+ * RMI远程接口，远程主机子获取该接口的实现类对象，并将对象赋于该接口
+ *
+ */
+public interface PerfectTimeI extends Remote{
+ 
+    public String getSysTime() throws RemoteException;
+}
+ 
+ 
+II)创建远程接口的实现类
+    该类除了实现远程接口之外还必须继承UnicastRemoteObject类，另外还必须有一个构造方法，实现远程接口的所有方法，不要忘了抛出RemoteException。
+ 
+package net.rmi.server;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+/**
+ *
+ * 此类是远程接口的实现类，为了该类的对象可以被远程调用，该类还必须继承
+ * UnicastRemoteObject类，
+ *
+ */
+public class PerfectTimeImpl extends UnicastRemoteObject implements
+       PerfectTimeI {
+ 
+    protected PerfectTimeImpl() throws RemoteException {
+       super();
+       // 父类的构造方法
+    }
+ 
+    public String getSysTime() throws RemoteException {
+       Date now=new Date();
+       SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+       String today=df.format(now);
+       return today;
+    }
+   
+ 
+}
+ 
+III)创建远程服务的启动类
+       该类主要的任务是注册端口，并将要被实例化的远程对象绑定到指定的JNI上。
+package net.rmi.server;
+ 
+import java.net.MalformedURLException;
+import java.rmi.AlreadyBoundException;
+import java.rmi.Naming;
+import java.rmi.RMISecurityManager;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+ 
+/**
+ *
+ *RMI的服务端，是用来启动远程调用，将远程调用的对象绑定到JNI上，远程
+ *客户可以通过该JNI调用被绑定的对象
+ *
+ */
+public class RmiServer {
+   
+    public static void main(String args[])
+    {
+        System.setSecurityManager(new RMISecurityManager());//创建和安装一个安全管理器
+       try {
+           PerfectTimeImpl pt=new PerfectTimeImpl();
+           LocateRegistry.createRegistry(25001); //在本地机器上注册该端口，相关当于激活该端口，以便远程客户可以通过该端口调用
+           Naming.bind("//hk:25001/PerfectTime", pt); //将要被远程调用的对象绑定到一个JNI名称，hk是服务端主机名，
+                                              //25001就是上面注册的端口，PerfectTime是自定义的，这里以类名来定义，pt是被绑定的对象
+       } catch (RemoteException e) {
+           // TODO Auto-generated catch block
+           e.printStackTrace();
+       } catch (MalformedURLException e) {
+           // TODO Auto-generated catch block
+           e.printStackTrace();
+       } catch (AlreadyBoundException e) {
+           // TODO Auto-generated catch block
+           e.printStackTrace();
+       }
+      
+    }
+ 
+}
+ 
+       上述一个接口两个类创建完后，服务端的代码编写就结束了，下面我们来生成stub和skeleton的类，这两个类是远程调用的关键，没有这两个类，就无法实现远程调用的。
+       编译上述JAVA文件，这里不描述。
+       然后进入命令行，进入到包的根路径，记住，我们这里要进入的是class文件的包路径，不是java源代码的目录，这里我们的包路径是net.rmi.server，那我们要进的目录就是net目录的上级目录，如果是JAVA文件的话，相当于src目录，在JAVA工程中，就是工程的bin目录，在WEB工程中就是/WEB-INF/classes目录了，执行如下命令：
+    >rmic net.rmi.server.PerfectTimeImpl
+    rmic是JAVA的自带命令，PerfectTimeImpl是远程接口的实现类。
+    执行结束后会在PerfectTimeImpl的同级目录下生成如下文件：
+    PerfectTimeImpl_Stub.class //存根文件
+    PerfectTimeImpl_Skel.class //干文件
+    这两个文件的作用，在上面有描述，不过那是我抄来的，不太明白那些意思。暂不管这两文件的作用，总之是很关键的了。
+    这两文件是在服务器端生成的，但客户端也是要一份的，就是两端都要有这两文件。
+    好了服务器端搞完了，下面来编写客户端，客户端在编写之前先来打个jar包。
+    进入命令行，定位到net.rmi.server包目录的根目录，即net的上一级目录。
+    执行如下命令：
+    >jar cvf c:/myrmi.jar net
+    即将net目录下的所有内容打成myrmi.jar，并输出到c:/目录下。
+    用压缩包软件打开jar包，查看net/rmi/server目录下是否有PerfectTimeI.class、erfectTimeImpl_Stub.class、PerfectTimeImpl_Skel.class这三个文件，其他的class一根删除去，因为只有这三个文件才是客户要用的。
+   
+    开始创建客户端
+    我们创建一个新的工程RMIClient,创建包rmi.client。再将刚刚打出来的jar包添加到构建路径中去。
+    创建客户端：
+    只需要注意Naming.lookup方法中的参数是远程绑定的JNI名就可以了。
+    package rmi.client;
+ 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+ 
+import net.rmi.server.PerfectTimeI;
+ 
+public class PerfectTimeClient {
+ 
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+       // TODO Auto-generated method stub
+       try {
+           //通过远程的JNI名查找该远程对象，并强制转为本地接口，这个接口即是远程接口
+           PerfectTimeI perfect=(PerfectTimeI)Naming.lookup("//hk:25001/PerfectTime");
+           System.out.println(perfect.getSysTime());
+       } catch (MalformedURLException e) {
+           // TODO Auto-generated catch block
+           e.printStackTrace();
+       } catch (RemoteException e) {
+           // TODO Auto-generated catch block
+           e.printStackTrace();
+       } catch (NotBoundException e) {
+           // TODO Auto-generated catch block
+           e.printStackTrace();
+       }
+      
+    }
+ 
+}
+ 
+OK，客户端创建完成，可以进行测试。
+1)运行RmiServer类 
+  进入工程目录下的bin目录，执行下面命令
+  >java net.rmi.server.RmiServer
+ 
+2)运行PerfectTimeClient类
+  进入工程目录下的bin目录，执行下面命令
+  > java -classpath ../lib/myrmi.jar;%classpath% rmi.client.PerfectTimeClient
+  注意：这里要将classpath引进来，因为PerfectTimeClient类有用到第三方包myrmi.jar。
+ 
+是否得到当前服务端的系统时间呢，也在执行第一步时就报出来如下错来：
+java.security.AccessControlException: access denied (java.net.SocketPermission hk resolve)
+解决办法如下：
+无法解析和连接到127.0.0.1的2005端口上，原因是在RmiServer中设置了安全管理器System.setSecurityManager(new RMISecurityManager());，可是又没有设置访问的策略，解决办法有四(解决这种异常的办法同样适用于 DisplayPerfectTime)：
+(1) 可以把代码System.setSecurityManager(new RMISecurityManager());去掉，不设置安全管理器
+(2) 修改JRE的安全策略文件，这就要求你能确定执行时是用的哪个JRE，比如在Eclipse中用JDK是D:\jdk142_04,相应的安全策略文件就是D:\jdk142_04\jre\lib\security\java.policy,如果是Applet中的java 程序就应该是在 jre 目录中,如文件D:\jdk142_04\lib\security\java.policy。修改安全策略文件，在grant {}，大括号中加上permission java.net.SocketPermission "*","connect,resolve";
+(3) 建立自己的策略文件，如c:\MyPolicy.policy ,内容为：
+        grant { 
+             permission java.net.SocketPermission "*","connect,resolve";
+        }
+    执行PerfectTime时用命令　java -Djava.security.policy=c:\MyPolicy.policy PerfectTime 　指定了安全策略文件
+(4) 把 System.setSecurityManager (new RMISecurityManager()) 改为匿名类实现，覆盖两个方法
+        System.setSecurityManager (new RMISecurityManager() {
+            public void checkConnect (String host, int port) {}
+            public void checkConnect (String host, int port, Object context) {}
+       });
+当然最简单的解决方法莫过于第一种。
+ 
+再次运行，成功了。

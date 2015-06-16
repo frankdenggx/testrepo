@@ -1,0 +1,90 @@
+--------------------------------------------------------------------
+--------------------------------------------------------------------
+Reader与Writer（读写器）
+----------------------
+1.简介
+2.用法
+3.常用方法
+4.注意事项
+-------------------------
+1.简介
+	读写器以字符为基本单位访问文件，读写器处理的是字符流。采用读写器构造出来的文件一般
+是文本文件，文本文件使用较大的存储空间。输入流与输出流类与读写器类之间存在一定的对应关
+系。如下图所示：
+					输入流和输出流的类与读写器的类之间的对应关系
+		-----------------------------------------------------------------------
+		输入流与输出流  |		读写器		| 输入流与输出流			|	读写器	
+		-----------------------------------------------------------------------
+		InputStream	  | 	Reader		|BufferedInputStream	|	BufferedReader
+		-----------------------------------------------------------------------
+		OutputStream  |		Writer		|BufferedOutputStream	| 	BufferedWriter
+		-----------------------------------------------------------------------
+		FileInputStream|	FileReader	|PrintStream			|	PrintWriter
+		-----------------------------------------------------------------------
+		FileOutputStream|	FileWriter	|						|
+		-----------------------------------------------------------------------
+
+2.用法
+	Reader和Writer是抽象类，需要实现其子类实例运用
+	FileReader:
+	fileReader = new FileReader("test.txt");
+	
+	FileWriter:
+	FileWriter = new FileWriter("test.txt");
+	
+	BufferedReader:
+	buffReader = new BufferedReader(new FileReader("test.txt");
+	
+	BufferedWriter:
+	buffWriter = new BufferedWriter(new FileWriter("test.txt");
+	
+	PrintWriter:
+	ptWriter = new PrintWriter(new FileWriter("test.txt");
+
+3.常用方法
+	读操作：
+	FileReader:
+	cBuff = new char[1024];
+	if (null == fileReader)
+		fileReader = new FileReader(file);
+	strFileContent = "";
+	while((fileReader.read(cBuff)) != -1){
+		strTemp = new String(cBuff);
+		strFileContent = strFileContent + strTemp;
+	}
+	
+	BufferedReader:
+	if (null == buffReader)
+		buffReader = new BufferedReader(new FileReader(file));
+	strFileContent = "";
+	while((strTemp = buffReader.readLine()) != null){
+		strFileContent = strFileContent + strTemp;
+	}
+	
+	
+	写操作：
+	FileWriter:
+	if (null == fileWriter)
+		fileWriter = new FileWriter(file);
+	fileWriter.write(strWriter);
+	
+	BufferedWriter:
+	if (null == buffWriter)
+		buffWriter = new BufferedWriter(new FileWriter(file));
+	buffWriter.write(strWriter);
+	buffWriter.newLine();
+	buffWriter.flush();
+	
+	PrintWriter:
+	if (null == ptWriter)
+		ptWriter = new PrintWriter(new FileWriter(file));
+	ptWriter.println(strWriter);
+	if (ptWriter.checkError())
+		throw new IOException("Write file error!");
+	
+	
+4.注意事项
+	A.读写器必须实现子类实例才能使用，其操作是字符流
+	B.Writer含有函数flush()强制输出
+	C.BufferedReader/Writer类含有readLine()函数与newLine()函数
+	D.PrintWriter含有PrintStream的所有实现方法

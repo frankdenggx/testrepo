@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<!--定义Logger的输出目的地为ConsoleAppender（控制台）-->
+	<appender name="toConsole" class="org.apache.log4j.ConsoleAppender">
+		<!-- 定义Logger是否产生后输出 -->
+		<param name="Follow" value="true"></param>
+		<!-- 定义Logger输出的颜色，ERR红色，OUT默认 -->
+		<param name="Target" value="System.err"></param>
+		<!--设置Appender的Layout为PatternLayout-->
+		<layout class="org.apache.log4j.PatternLayout">
+			<!-- 设置Layout的输出格式 -->
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss}[%p][%c{1}@%M]INFO:%n%m"></param>
+		</layout>
+	</appender>
+	<!-- 定义Logger的输出目的地为FileAppender（文件） -->
+	<appender name="toFile" class="org.apache.log4j.FileAppender">
+		<!--设置File的输出位置-->
+		<param name="File" value="log_file.txt"></param>
+		<!--定义缓冲大小-->
+		<param name="BufferSize" value="20"></param>
+		<!--定义文件末尾增加-->
+		<param name="Append" value="true"></param>
+		<!--设置Appender的Layout为PatternLayout-->
+		<layout class="org.apache.log4j.PatternLayout">
+			<!--设置Layout的输出格式-->
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss}[%p][%c{1}@%M]INFO:%n%m"></param>
+		</layout>
+	</appender>
+	<!--设置Logger的输出目的地为RollingFileAppender（文件，可备份）-->
+	<appender name="toRollingFile" class="org.apache.log4j.RollingFileAppender">
+		<!--设置File的输出位置-->
+		<param name="File" value="log_rollingfile.txt"></param>
+		<!--设置文件备份数目，默认为1-->
+		<param name="MaxBackupIndex" value="1"></param>
+		<!--设置文件的大小，默认为10MB-->
+		<param name="MaxFileSize" value="200KB"></param>
+		<!--设置文件最大容量，超过这个容量，文件开始备份到另外一个文件-->
+		<param name="MaximumFileSize" value="300"></param>
+		<!--设置Appender的Layout为PatternLayout-->
+		<layout class="org.apache.log4j.PatternLayout">
+			<!--设置Layout的输出格式-->
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss}[%p][%c{1}@%M]INFO:%n%m"></param>
+		</layout>
+	</appender>
+	<!--设置Logger的输出目的地为DailyRollingFileAppender（文件，按频率备份）-->
+	<appender name="toDailyRollingFile" class="org.apache.log4j.DailyRollingFileAppender">
+		<!--设置File的输出路径-->
+		<param name="File" value="log_dailyrollingfile.html"></param>
+		<!--设置文件备份的频率-->
+		<param name="DatePattern" value="'.'yyyy-MM-dd"></param>
+		<!--设置Appender的Layout为HTMLLayout-->
+		<layout class="org.apache.log4j.HTMLLayout"></layout>
+	</appender>
+	<!--设置Logger的输出目的地为SMTPAppender（自定义的SMTPAppender）-->
+	<appender name="toSmtp" class="MyAppender.SMTPAppender">
+		<!--设置邮件服务入口(ALL,表示全部使用）-->
+		<param name="Threshold" value="ALL"></param>
+		<!--设置邮件服务器-->
+		<param name="SMTPHost" value="smtp.126.com"></param>
+		<!--设置发送邮箱-->
+		<param name="From" value="yoyudeng@126.com"></param>
+		<!--设置接收邮箱-->
+		<param name="To" value="yoyudenghihi@163.com"></param>
+		<!--设置邮件标题-->
+		<param name="Subject" value="广州人民检察机关"></param>
+		<!-- 是否启用编码 -->
+		<param name="Encoding" value="true"></param>
+		<!--设置是否使用身份标识-->
+		<param name="Auth" value="true"></param>
+		<!--设置是否是本地邮件-->
+		<param name="LocationInfo" value="true"></param>
+		<!--设置发送邮箱用户名-->
+		<param name="Username" value="yoyudeng"></param>
+		<!--设置发送邮箱用户密码-->
+		<param name="Password" value="135137"></param>
+		<!--设置Appender的Layout为PatternLayout-->
+		<layout class="org.apache.log4j.PatternLayout">
+			<!--设置Layout的输出格式-->
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss}[%p][%c{1}@%M]INFO:%n%m"></param>
+		</layout>
+	</appender>
+	<!--设置Logger的输出目的地为JDBCAppender（数据库文件）-->
+	<appender name="toDatabase" class="org.apache.log4j.jdbc.JDBCAppender">
+		<!--设置数据库URL-->
+		<param name="URL" value="jdbc:mysql://localhost:3306/test?autoReconnect"></param>
+		<!--设置数据库驱动-->
+		<param name="driver" value="com.mysql.jdbc.Driver"></param>
+		<!--设置数据库用户名-->
+		<param name="user" value="root"></param>
+		<!--设置数据库用户密码-->
+		<param name="password" value="yoyudeng"></param>
+		<!--设置SQL发送编码-->
+		<param name="sql" value="SET NAMES 'GBK'"></param>
+		<!--设置SQL语句-->
+		<param name="sql"
+			value="INSERT INTO log4j(Message) VALUES('%d{yyyy-MM-dd HH:mm:ss}[%p][%c{1}@%M]INFO:%n%m')"></param>
+	</appender>
+	<!--设置Logger-->
+	<logger name="log4jTestLogger" additivity="true">
+		<!--设置Logger的级别-->
+		<level class="org.apache.log4j.Level" value="ERROR"></level>
+		<appender-ref ref="toFile"></appender-ref>
+		
+		<appender-ref ref="toRollingFile"></appender-ref>
+		<appender-ref ref="toDailyRollingFile"></appender-ref>
+		<appender-ref ref="toSmtp"></appender-ref>
+		<appender-ref ref="toDatabase"></appender-ref>
+	</logger>
+	<!--设置根Logger-->
+	<root>
+		<!--设置Logger的级别-->
+		<level class="org.apache.log4j.Level" value="DEBUG"></level>
+		<appender-ref ref="toConsole"></appender-ref>
+		<appender-ref ref="toFile"></appender-ref>
+		<appender-ref ref="toRollingFile"></appender-ref>
+		<appender-ref ref="toDailyRollingFile"></appender-ref>
+		<appender-ref ref="toSmtp"></appender-ref>
+		<appender-ref ref="toDatabase"></appender-ref>
+	</root>
+</log4j:configuration>
