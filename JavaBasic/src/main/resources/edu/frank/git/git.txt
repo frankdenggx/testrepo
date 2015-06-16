@@ -3,3 +3,4 @@ I changed --.[ver:1.1]
 Call stack.[ver:1.2]
 Stage check.
 S
+you are a stupid boy.
