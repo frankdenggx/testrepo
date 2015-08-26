@@ -200,10 +200,11 @@ public final class _Main implements Runnable {
 //			int i = 12;
 //			System.out.println(i-=i*=i);
 //			System.out.print(i+=i-=i*=i);
-			getMaxETString("aaaaaabbccc!!!!!!!!!!!!");
+			//getMaxETString("aaaaaabbccc!!!!!!!!!!!!");
 			//int i = 0;
-			System.out.println(0.653214);
-			
+			//System.out.println(0.653214);
+			int[] a = {1, 2, 3};
+			int[] b = {3, 4, 5};
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
